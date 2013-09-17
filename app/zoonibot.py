@@ -12,6 +12,7 @@ sdss_typedefs = {0: 'unknowns',
                  4: 'ghosts',
                  6: 'stars'}
 
+
 def myconesearch(ra, dec, sr, catname="SDSS DR8 - Sloan Digital Sky Survey Data Release 8 2"):
     try:
         response = conesearch.conesearch(ra, dec, sr, catalog_db=catname)
@@ -39,14 +40,18 @@ def galaxyzoo_response(ra, dec, sr=0.01):
     mytypes, mycounts = count_unique(data[mask]['type'].data)
     contents = []
     for i in np.argsort(mycounts)[::-1]:
-        contents.append("{0} {1}".format(mycounts[i],
-                                         sdss_typedefs[mytypes[i]]))
+        mytype = sdss_typedefs[mytypes[i]]
+        mycount = mycounts[i]
+        if mytype == 'galaxies' and mycount == 1:
+            mytype = 'galaxy'
+        contents.append("{0} {1}".format(mycount,
+                                         mytype))
     # Parse Zoonibot's response
     response = "This region contains about "
     result = response+" and ".join(contents)+"."
 
     if np.any(data[mask]['i'] < 14):
-        result += ' One of the stars is very bright and might be causing artefacts.'
+        result += ' One of the stars is bright and has saturated the camera, which causes weird-looking artefacts.'
     return result
 
 def planethunters_response(ra, dec):
