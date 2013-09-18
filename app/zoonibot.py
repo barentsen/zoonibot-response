@@ -4,6 +4,7 @@
 """
 from astropy.vo.client import conesearch
 from astropy.vo.client.vos_catalog import VOSError
+from astropy.io import ascii
 import numpy as np
 
 sdss_typedefs = {0: 'unknowns',
@@ -12,6 +13,15 @@ sdss_typedefs = {0: 'unknowns',
                  4: 'ghosts',
                  6: 'stars'}
 
+def phid_to_coordinates(phid):
+    """Converts a Planet Hunter light curve id to coordinates.
+    """
+    try:
+        ph_identifiers = ascii.read('IDcoords.csv')
+        idx = np.argwhere(ph_identifiers['subject_id'] == phid)[0]
+        return ph_identifiers['ra'][idx], ph_identifiers['decl'][idx]
+    except IndexError:
+        return None
 
 def myconesearch(ra, dec, sr, catname="SDSS DR8 - Sloan Digital Sky Survey Data Release 8 2"):
     try:
@@ -69,3 +79,4 @@ def planethunters_response(ra, dec):
 if __name__ == '__main__':
     # Example: http://talk.galaxyzoo.org/#/subjects/AGZ00045p8
     print galaxyzoo_response(102.840897955775, 39.1928898447807, 0.01)
+    FLIBBLE
